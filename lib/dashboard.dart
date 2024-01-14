@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart'; // Import the shared_preferences package
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/medicine.dart';
 import 'medicine_detail_page.dart';
-import 'login.dart'; // Import the LoginPage
+import 'login.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -16,11 +16,36 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   late Future<List<Medicine>> futureMedicines;
+  int cartCount = 0;
 
   @override
   void initState() {
     super.initState();
     futureMedicines = fetchMedicines();
+    retrieveCartCount();
+  }
+
+  Future<void> retrieveCartCount() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String username = prefs.getString('username') ?? '';
+
+    try {
+      final response = await http.get(
+        Uri.parse('http://192.168.184.78/pharmacy/getCartCount.php?username=$username'),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = json.decode(response.body);
+        setState(() {
+          cartCount = jsonData['cart_count'];
+        });
+        print('Cart count: $cartCount');
+      } else {
+        throw Exception('Failed to retrieve cart count. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error retrieving cart count: $e');
+    }
   }
 
   Future<List<Medicine>> fetchMedicines() async {
@@ -33,7 +58,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
-
         return jsonData.map((item) => Medicine.fromJson(item)).toList();
       } else {
         throw Exception('Failed to load medicine data. Status code: ${response.statusCode}');
@@ -44,11 +68,9 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  // Function to clear user data and navigate to login page
   Future<void> _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    // Check if the user is already logged out
     if (prefs.getString('username') == null) {
       Fluttertoast.showToast(
         msg: 'You are already logged out!',
@@ -56,10 +78,7 @@ class _DashboardPageState extends State<DashboardPage> {
         textColor: Colors.white,
       );
     } else {
-      //print('Before logout: ${prefs.getString('username')}');
-      await prefs.clear(); // Clear all data in SharedPreferences
-      //print('After logout: ${prefs.getString('username')}');
-
+      await prefs.clear();
       Fluttertoast.showToast(
         msg: 'Logout successful!',
         backgroundColor: Colors.green,
@@ -74,7 +93,6 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,13 +100,39 @@ class _DashboardPageState extends State<DashboardPage> {
         title: const Text('Dashboard'),
         automaticallyImplyLeading: false,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_cart),
-            onPressed: () {},
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.shopping_cart),
+                onPressed: () {},
+              ),
+              Positioned(
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
+                  child: Text(
+                    cartCount.toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
           ),
           IconButton(
-            icon: const Icon(Icons.logout), // Logout icon
-            onPressed: _logout, // Call the _logout function when pressed
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
           ),
         ],
       ),

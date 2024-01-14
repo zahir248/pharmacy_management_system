@@ -19,7 +19,7 @@ class Medicine {
   factory Medicine.fromJson(Map<String, dynamic> json) {
     Uint8List decodedImageData = base64.decode(json['image'] ?? '');
     return Medicine(
-      medicineId: int.parse(json['medicineId'] ?? '0'),
+      medicineId: int.parse(json['medicine_id'] ?? '0'),
       name: json['name'] as String? ?? '',
       imageData: decodedImageData,
       price: double.parse(json['price'] ?? '0.0'),

@@ -22,7 +22,8 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> authenticateUser() async {
     try {
       final response = await http.post(
-        Uri.parse('https://farmasee.000webhostapp.com/login.php'),
+        //Uri.parse('https://farmasee.000webhostapp.com/login.php'),
+        Uri.parse('http://192.168.184.78/pharmacy/login.php'),
         body: {
           'username': _usernameController.text,
           'password': _passwordController.text,

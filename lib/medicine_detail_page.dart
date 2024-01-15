@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/medicine.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dashboard.dart'; // Import your DashboardPage file
+import 'checkout_buy.dart';
 
 class MedicineDetailPage extends StatefulWidget {
   final Medicine medicine;
@@ -25,7 +26,8 @@ class _MedicineDetailPageState extends State<MedicineDetailPage> {
   Future<void> addToCart() async {
     String username = await getUsername();
 
-    final url = Uri.parse('https://farmasee.000webhostapp.com/addToCart.php');
+    //final url = Uri.parse('https://farmasee.000webhostapp.com/addToCart.php');
+    final url = Uri.parse('http://192.168.184.78/pharmacy/addToCart.php');
 
     try {
       final response = await http.post(
@@ -186,11 +188,21 @@ class _MedicineDetailPageState extends State<MedicineDetailPage> {
                     ),
                   ),
                   SizedBox(width: 20.0),
+                  // Inside _MedicineDetailPageState class
                   SizedBox(
                     height: 48.0,
                     child: ElevatedButton(
                       onPressed: () {
-                        // Implement the logic for "Buy Now" button
+                        // Navigate to CheckoutPage and pass necessary data
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CheckoutPage(
+                              medicine: widget.medicine,
+                              quantity: quantity,
+                            ),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
@@ -201,6 +213,7 @@ class _MedicineDetailPageState extends State<MedicineDetailPage> {
                       child: Text('Buy Now'),
                     ),
                   ),
+
                 ],
               ),
             ],

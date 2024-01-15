@@ -18,12 +18,38 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   late Future<List<Medicine>> futureMedicines;
   int cartCount = 0;
+  int shipCount = 0; // New variable for shipping count
 
   @override
   void initState() {
     super.initState();
     futureMedicines = fetchMedicines();
     retrieveCartCount();
+    retrieveShipCount(); // Call the method to retrieve shipping count
+  }
+
+  Future<void> retrieveShipCount() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String username = prefs.getString('username') ?? '';
+
+    try {
+      final response = await http.get(
+        //Uri.parse('https://farmasee.000webhostapp.com/getShipCount.php?username=$username'),
+        Uri.parse('http://192.168.184.78/pharmacy/getShipCount.php?username=$username'),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = json.decode(response.body);
+        setState(() {
+          shipCount = jsonData['ship_count'];
+        });
+        print('Ship count: $shipCount');
+      } else {
+        throw Exception('Failed to retrieve ship count. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error retrieving ship count: $e');
+    }
   }
 
   Future<void> retrieveCartCount() async {
@@ -32,7 +58,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://farmasee.000webhostapp.com/getCartCount.php?username=$username'),
+        //Uri.parse('https://farmasee.000webhostapp.com/getCartCount.php?username=$username'),
+        Uri.parse('http://192.168.184.78/pharmacy/getCartCount.php?username=$username'),
       );
 
       if (response.statusCode == 200) {
@@ -52,7 +79,8 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<List<Medicine>> fetchMedicines() async {
     try {
       final response = await http.get(
-        Uri.parse('https://farmasee.000webhostapp.com/fetchMedicines.php'),
+        //Uri.parse('https://farmasee.000webhostapp.com/fetchMedicines.php'),
+        Uri.parse('http://192.168.184.78/pharmacy/fetchMedicines.php'),
       );
 
       print('Raw JSON response: ${response.body}');
@@ -113,7 +141,7 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
-                onPressed: _navigateToShoppingCart, // Updated onPressed callback
+                onPressed: _navigateToShoppingCart,
               ),
               Positioned(
                 right: 0,
@@ -129,6 +157,38 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   child: Text(
                     cartCount.toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.local_shipping),
+                onPressed: () {
+                  // Handle shipping icon pressed
+                },
+              ),
+              Positioned(
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
+                  child: Text(
+                    shipCount.toString(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,

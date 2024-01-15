@@ -32,7 +32,8 @@ class CheckoutPage extends StatelessWidget {
       return;
     }
 
-    final Uri apiUrl = Uri.parse('https://farmasee.000webhostapp.com/updateStatus.php');
+    //final Uri apiUrl = Uri.parse('https://farmasee.000webhostapp.com/updateStatus.php');
+    final Uri apiUrl = Uri.parse('http://192.168.184.78/pharmacy/updateStatus.php');
 
     try {
       for (Transaction transaction in transactions) {

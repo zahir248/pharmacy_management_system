@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/medicine.dart';
 import 'medicine_detail_page.dart';
 import 'login.dart';
+import 'shopping_cart_page.dart'; // Import your ShoppingCartPage file
 import 'package:fluttertoast/fluttertoast.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -93,6 +94,14 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
+  Future<void> _navigateToShoppingCart() async {
+    // Navigate to the shopping cart page
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ShoppingCartPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,7 +113,7 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
-                onPressed: () {},
+                onPressed: _navigateToShoppingCart, // Updated onPressed callback
               ),
               Positioned(
                 right: 0,

@@ -39,8 +39,8 @@ class CheckoutPage extends StatelessWidget {
       return; // Return from the method if the address is empty
     }
 
-    //final url = Uri.parse('https://farmasee.000webhostapp.com/addToBuy.php');
-    final url = Uri.parse('http://192.168.184.78/pharmacy/addToBuy.php');
+    final url = Uri.parse('https://farmasee.000webhostapp.com/addToBuy.php');
+    //final url = Uri.parse('http://192.168.184.78/pharmacy/addToBuy.php');
 
     try {
       final response = await http.post(

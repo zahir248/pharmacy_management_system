@@ -49,8 +49,7 @@ class _RegisterState extends State<Register> {
       }
 
       final response = await http.post(
-        //Uri.parse('https://farmasee.000webhostapp.com/register.php'),
-        Uri.parse('http://192.168.184.78/pharmacy/register.php'),
+        Uri.parse('https://farmasee.000webhostapp.com/register.php'),
         body: {
           'username': _usernameController.text,
           'email': _emailController.text,
@@ -76,6 +75,18 @@ class _RegisterState extends State<Register> {
             context,
             MaterialPageRoute(builder: (context) => LoginPage()),
           );
+        } else if (response.body.trim() == 'Error: Username already exists. Please choose a different username.') {
+          // Display a message for the case when the username already exists
+          Fluttertoast.showToast(
+            msg: 'Username already exists. Please choose a different username.',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+          );
+
+          // Handle the case where the username already exists
+          print('Username already exists. Please choose a different username.');
         } else {
           Fluttertoast.showToast(
             msg: 'Registration failed!',
@@ -116,7 +127,6 @@ class _RegisterState extends State<Register> {
       // Handle the failure, show a message, etc.
     }
   }
-
 
   @override
   Widget build(BuildContext context) {

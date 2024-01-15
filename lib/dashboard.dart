@@ -5,8 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/medicine.dart';
 import 'medicine_detail_page.dart';
 import 'login.dart';
-import 'shopping_cart_page.dart'; // Import your ShoppingCartPage file
+import 'shopping_cart_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'receive.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -18,14 +19,15 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   late Future<List<Medicine>> futureMedicines;
   int cartCount = 0;
-  int shipCount = 0; // New variable for shipping count
+  int shipCount = 0;
+  String searchQuery = '';
 
   @override
   void initState() {
     super.initState();
     futureMedicines = fetchMedicines();
     retrieveCartCount();
-    retrieveShipCount(); // Call the method to retrieve shipping count
+    retrieveShipCount();
   }
 
   Future<void> retrieveShipCount() async {
@@ -34,8 +36,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
     try {
       final response = await http.get(
-        //Uri.parse('https://farmasee.000webhostapp.com/getShipCount.php?username=$username'),
-        Uri.parse('http://192.168.184.78/pharmacy/getShipCount.php?username=$username'),
+        Uri.parse('https://farmasee.000webhostapp.com/getShipCount.php?username=$username'),
       );
 
       if (response.statusCode == 200) {
@@ -58,8 +59,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
     try {
       final response = await http.get(
-        //Uri.parse('https://farmasee.000webhostapp.com/getCartCount.php?username=$username'),
-        Uri.parse('http://192.168.184.78/pharmacy/getCartCount.php?username=$username'),
+        Uri.parse('https://farmasee.000webhostapp.com/getCartCount.php?username=$username'),
       );
 
       if (response.statusCode == 200) {
@@ -79,8 +79,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<List<Medicine>> fetchMedicines() async {
     try {
       final response = await http.get(
-        //Uri.parse('https://farmasee.000webhostapp.com/fetchMedicines.php'),
-        Uri.parse('http://192.168.184.78/pharmacy/fetchMedicines.php'),
+        Uri.parse('https://farmasee.000webhostapp.com/fetchMedicines.php'),
       );
 
       print('Raw JSON response: ${response.body}');
@@ -123,7 +122,6 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> _navigateToShoppingCart() async {
-    // Navigate to the shopping cart page
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ShoppingCartPage()),
@@ -172,7 +170,10 @@ class _DashboardPageState extends State<DashboardPage> {
               IconButton(
                 icon: const Icon(Icons.local_shipping),
                 onPressed: () {
-                  // Handle shipping icon pressed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ReceivePage()),
+                  );
                 },
               ),
               Positioned(
@@ -211,6 +212,11 @@ class _DashboardPageState extends State<DashboardPage> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
+                onChanged: (value) {
+                  setState(() {
+                    searchQuery = value;
+                  });
+                },
                 decoration: InputDecoration(
                   hintText: 'Search...',
                   border: OutlineInputBorder(
@@ -231,6 +237,10 @@ class _DashboardPageState extends State<DashboardPage> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
                   final medicines = snapshot.data!;
+                  final filteredMedicines = medicines.where((medicine) {
+                    return medicine.name.toLowerCase().contains(searchQuery.toLowerCase());
+                  }).toList();
+
                   return GridView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
@@ -239,7 +249,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       crossAxisSpacing: 8.0,
                       mainAxisSpacing: 8.0,
                     ),
-                    itemCount: medicines.length,
+                    itemCount: filteredMedicines.length,
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () {
@@ -247,12 +257,12 @@ class _DashboardPageState extends State<DashboardPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => MedicineDetailPage(
-                                medicine: medicines[index],
+                                medicine: filteredMedicines[index],
                               ),
                             ),
                           );
                         },
-                        child: buildMedicineCard(medicines[index]),
+                        child: buildMedicineCard(filteredMedicines[index]),
                       );
                     },
                   );

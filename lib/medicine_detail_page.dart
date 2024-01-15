@@ -26,8 +26,8 @@ class _MedicineDetailPageState extends State<MedicineDetailPage> {
   Future<void> addToCart() async {
     String username = await getUsername();
 
-    //final url = Uri.parse('https://farmasee.000webhostapp.com/addToCart.php');
-    final url = Uri.parse('http://192.168.184.78/pharmacy/addToCart.php');
+    final url = Uri.parse('https://farmasee.000webhostapp.com/addToCart.php');
+    //final url = Uri.parse('http://192.168.184.78/pharmacy/addToCart.php');
 
     try {
       final response = await http.post(

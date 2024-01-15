@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const LoginPage(),
+      debugShowCheckedModeBanner: false, // Set this to false to remove the debug banner
     );
   }
 }

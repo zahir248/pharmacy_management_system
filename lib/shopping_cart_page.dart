@@ -29,7 +29,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.184.78/pharmacy/getInCart.php?username=$username'),
+        Uri.parse('https://farmasee.000webhostapp.com/getInCart.php?username=$username'),
       );
 
       if (response.statusCode == 200) {

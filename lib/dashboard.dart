@@ -32,7 +32,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.184.78/pharmacy/getCartCount.php?username=$username'),
+        Uri.parse('https://farmasee.000webhostapp.com/getCartCount.php?username=$username'),
       );
 
       if (response.statusCode == 200) {
@@ -52,7 +52,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<List<Medicine>> fetchMedicines() async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.184.78/pharmacy/fetchMedicines.php'),
+        Uri.parse('https://farmasee.000webhostapp.com/fetchMedicines.php'),
       );
 
       print('Raw JSON response: ${response.body}');

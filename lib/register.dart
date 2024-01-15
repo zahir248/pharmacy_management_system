@@ -49,7 +49,7 @@ class _RegisterState extends State<Register> {
       }
 
       final response = await http.post(
-        Uri.parse('http://192.168.184.78/pharmacy/register.php'),
+        Uri.parse('https://farmasee.000webhostapp.com/register.php'),
         body: {
           'username': _usernameController.text,
           'email': _emailController.text,
